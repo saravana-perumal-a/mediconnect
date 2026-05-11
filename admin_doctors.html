@@ -1,0 +1,102 @@
+{% extends 'layout.html' %}
+{% block title %}Manage Doctors{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div class="page-header" style="margin-bottom:0;">
+        <h2><i class="ph-fill ph-stethoscope" style="color:var(--accent);"></i> Manage Doctors</h2>
+        <p>View, edit, and remove doctor profiles from the system.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ url_for('admin.add_doctor') }}" class="btn btn-primary btn-sm">
+            <i class="ph ph-plus"></i> Add New Doctor
+        </a>
+        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">
+            <i class="ph ph-arrow-left"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Summary Bar -->
+<div class="stat-card mb-4" style="max-width:300px;">
+    <div class="stat-icon stat-icon-teal"><i class="ph-fill ph-stethoscope"></i></div>
+    <div>
+        <div class="stat-value">{{ doctors|length }}</div>
+        <div class="stat-label">Total Doctors</div>
+    </div>
+</div>
+
+<!-- Doctors Grid -->
+{% if doctors %}
+<div class="grid grid-cols-3" style="gap:1.25rem;">
+    {% for doc in doctors %}
+    <div class="card" style="padding:1.5rem;">
+        <!-- Doctor Header -->
+        <div class="flex items-center gap-3 mb-3" style="padding-bottom:1rem;border-bottom:1.5px solid var(--border);">
+            <div class="profile-avatar" style="width:52px;height:52px;font-size:1.2rem;flex-shrink:0;">
+                {{ doc.name[0] if doc.name else 'D' }}
+            </div>
+            <div style="min-width:0;">
+                <h4 style="margin-bottom:0.15rem;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ doc.name }}</h4>
+                <span class="badge badge-primary" style="font-size:0.7rem;">{{ doc.specialization }}</span>
+            </div>
+        </div>
+
+        <!-- Doctor Info -->
+        <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:1.25rem;">
+            <div class="flex items-center gap-2 text-sm text-muted">
+                <i class="ph-fill ph-envelope" style="color:var(--primary);flex-shrink:0;"></i>
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ doc.email }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted">
+                <i class="ph-fill ph-hospital" style="color:var(--primary);flex-shrink:0;"></i>
+                <span>{{ doc.hospital }}</span>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-muted">
+                <i class="ph-fill ph-map-pin" style="color:var(--primary);flex-shrink:0;"></i>
+                <span>{{ doc.location }}</span>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;">
+            <div style="flex:1;text-align:center;padding:0.6rem;background:var(--primary-xlight);border-radius:8px;border:1px solid var(--border-dark);">
+                <div style="font-size:1.2rem;font-weight:800;color:var(--primary);">{{ doc.experience|default(0) }}</div>
+                <div style="font-size:0.72rem;color:var(--text-secondary);font-weight:500;">Yrs Exp</div>
+            </div>
+            <div style="flex:1;text-align:center;padding:0.6rem;background:#FFFBEB;border-radius:8px;border:1px solid #FDE68A;">
+                <div style="font-size:1.2rem;font-weight:800;color:#92400E;">{{ doc.rating|default('0.0') }}</div>
+                <div style="font-size:0.72rem;color:var(--text-secondary);font-weight:500;">Rating</div>
+            </div>
+            <div style="flex:1;text-align:center;padding:0.6rem;background:#F0FDF4;border-radius:8px;border:1px solid #BBF7D0;">
+                <div style="font-size:1.2rem;font-weight:800;color:#15803D;">{{ doc.appt_count }}</div>
+                <div style="font-size:0.72rem;color:var(--text-secondary);font-weight:500;">Appts</div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:0.6rem;">
+            <a href="{{ url_for('admin.edit_doctor', doctor_id=doc._id) }}" class="btn btn-outline btn-sm" style="flex:1;text-align:center;">
+                <i class="ph ph-pencil-simple"></i> Edit
+            </a>
+            <form method="POST" action="{{ url_for('admin.delete_doctor', doctor_id=doc._id) }}"
+                  onsubmit="return confirm('Delete Dr. {{ doc.name }}? This removes their profile, slots, and appointments.');"
+                  style="flex:1;">
+                <button type="submit" class="btn btn-danger btn-sm w-full">
+                    <i class="ph ph-trash"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card text-center" style="padding:4rem 2rem;">
+    <div style="width:80px;height:80px;background:#E0F7FA;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+        <i class="ph-fill ph-stethoscope" style="font-size:2.5rem;color:var(--accent);"></i>
+    </div>
+    <h3>No Doctors Registered</h3>
+    <p class="text-muted">No doctor profiles have been created yet.</p>
+</div>
+{% endif %}
+{% endblock %}

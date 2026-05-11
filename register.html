@@ -1,0 +1,99 @@
+{% extends 'layout.html' %}
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="max-width:540px;">
+    <div class="text-center mb-4">
+        <div style="width:64px;height:64px;background:var(--gradient-brand);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:0 8px 24px rgba(29,111,242,0.3);">
+            <i class="ph-fill ph-user-plus" style="font-size:2rem;color:white;"></i>
+        </div>
+        <h2 style="margin-bottom:0.35rem;">Create an Account</h2>
+        <p class="text-muted">Join MediConnect and take control of your health today.</p>
+    </div>
+
+    <div class="glass-card">
+        <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm">
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-user-circle" style="color:var(--primary);"></i> I am a...</label>
+                <select name="role" id="roleSelect" class="form-control" onchange="toggleFields()">
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-envelope" style="color:var(--primary);"></i> Email Address</label>
+                <input type="email" name="email" class="form-control" required placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-lock" style="color:var(--primary);"></i> Password</label>
+                <input type="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
+
+            <!-- Doctor Specific Fields -->
+            <div id="doctorFields" style="display:none;">
+                <hr class="divider">
+                <div class="section-title" style="font-size:0.92rem;">
+                    <i class="ph-fill ph-stethoscope" style="color:var(--primary);"></i> Doctor Details
+                </div>
+
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" id="docName" class="form-control" placeholder="Dr. John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Specialization</label>
+                        <input type="text" name="specialization" id="docSpec" class="form-control" placeholder="Cardiologist">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Hospital / Clinic</label>
+                        <input type="text" name="hospital" id="docHosp" class="form-control" placeholder="City General Hospital">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" id="docLoc" class="form-control" placeholder="New York, NY">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="registerBtn" class="btn btn-primary w-full mt-2" style="padding:0.85rem;">
+                <i class="ph ph-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <hr class="divider">
+        <p class="text-center text-sm text-muted">
+            Already have an account? <a href="{{ url_for('auth.login') }}" style="font-weight:600;">Login here</a>
+        </p>
+    </div>
+</div>
+
+<script>
+function toggleFields() {
+    var role = document.getElementById('roleSelect').value;
+    
+    // Toggle Sections
+    document.getElementById('doctorFields').style.display = role === 'doctor' ? 'block' : 'none';
+    
+    // Required attributes toggle
+    var docInputs = ['docName', 'docSpec', 'docHosp', 'docLoc'];
+    docInputs.forEach(id => {
+        document.getElementById(id).required = (role === 'doctor');
+    });
+    
+    // Style primary button for admin
+    var btn = document.getElementById('registerBtn');
+    if (role === 'admin') {
+        btn.style.background = 'linear-gradient(135deg,#1D6FF2,#7C3AED)';
+    } else {
+        btn.style.background = 'var(--gradient-brand)';
+    }
+}
+</script>
+{% endblock %}

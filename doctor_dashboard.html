@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="hero-banner">
+    <div class="hero-badge"><span class="live-dot"></span> Doctor Account</div>
+    <h2>Welcome, Dr. {{ doctor.name }} 👨‍⚕️</h2>
+    <p>Manage your profile, schedule, and patient appointments.</p>
+</div>
+
+<div class="grid grid-cols-3" style="gap:1.5rem;">
+    <!-- Left Column: Stats + Quick Actions -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+        <!-- Rating Card -->
+        <div class="card text-center" style="padding:1.75rem;">
+            <div style="width:56px;height:56px;background:#FFFBEB;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                <i class="ph-fill ph-star" style="font-size:1.75rem;color:var(--warning);"></i>
+            </div>
+            <div style="font-size:2.2rem;font-weight:800;color:var(--text-primary);line-height:1;">{{ doctor.rating|default('0.0') }}</div>
+            <div class="text-sm text-muted mt-1">{{ doctor.reviews|length if doctor.reviews else 0 }} Reviews</div>
+            <div class="badge badge-warning mt-2">Overall Rating</div>
+        </div>
+
+        <!-- Quick Action: Manage Schedule -->
+        <div class="card text-center" style="cursor:pointer;padding:1.5rem;" onclick="location.href = `{{ url_for('doctor.manage_slots') }}`;">
+            <div style="width:48px;height:48px;background:var(--primary-xlight);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;">
+                <i class="ph-fill ph-clock" style="font-size:1.5rem;color:var(--primary);"></i>
+            </div>
+            <h5 style="margin:0;font-size:0.92rem;">Manage Schedule</h5>
+        </div>
+
+        <!-- Quick Action: View Appointments -->
+        <div class="card text-center" style="cursor:pointer;padding:1.5rem;" onclick="location.href = `{{ url_for('doctor.appointments') }}`;">
+            <div style="width:48px;height:48px;background:#E0F7FA;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem;">
+                <i class="ph-fill ph-users" style="font-size:1.5rem;color:var(--accent);"></i>
+            </div>
+            <h5 style="margin:0;font-size:0.92rem;">View Appointments</h5>
+        </div>
+    </div>
+
+    <!-- Right Column: Edit Profile -->
+    <div style="grid-column:span 2;">
+        <div class="glass-card">
+            <div class="section-title"><i class="ph-fill ph-pencil-simple" style="color:var(--primary);"></i> Edit Profile</div>
+            <form method="POST" action="{{ url_for('doctor.dashboard') }}">
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ doctor.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Specialization</label>
+                        <input type="text" name="specialization" class="form-control" value="{{ doctor.specialization }}" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Hospital / Clinic</label>
+                        <input type="text" name="hospital" class="form-control" value="{{ doctor.hospital }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ doctor.location }}" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Years of Experience</label>
+                        <input type="number" name="experience" class="form-control" value="{{ doctor.experience|default(0) }}" required min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Qualifications <span class="text-muted">(comma separated)</span></label>
+                        <input type="text" name="qualifications" class="form-control" value="{{ doctor.qualifications|join(', ') if doctor.qualifications else '' }}" placeholder="MBBS, MD - Cardiology">
+                    </div>
+                </div>
+                <div class="flex justify-end mt-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph ph-floppy-disk"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends 'layout.html' %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="hero-banner" style="background:linear-gradient(135deg,#1D6FF2 0%,#7C3AED 100%);">
+    <div class="hero-badge" style="background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.35);">
+        <i class="ph-fill ph-shield-check"></i> Administrator Panel
+    </div>
+    <h2>Admin Dashboard</h2>
+    <p>Full system overview — manage patients, doctors, and appointments.</p>
+</div>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-3" style="margin-bottom:2rem;">
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-blue"><i class="ph-fill ph-users"></i></div>
+        <div>
+            <div class="stat-value">{{ total_patients }}</div>
+            <div class="stat-label">Total Patients</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-teal"><i class="ph-fill ph-stethoscope"></i></div>
+        <div>
+            <div class="stat-value">{{ total_doctors }}</div>
+            <div class="stat-label">Total Doctors</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon stat-icon-green"><i class="ph-fill ph-calendar-check"></i></div>
+        <div>
+            <div class="stat-value">{{ total_appointments }}</div>
+            <div class="stat-label">Total Appointments</div>
+        </div>
+    </div>
+</div>
+
+<!-- Appointment Breakdown + Quick Links -->
+<div class="grid grid-cols-3" style="gap:1.5rem;margin-bottom:2rem;">
+    <!-- Breakdown Cards -->
+    <div class="card" style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="section-title" style="font-size:0.95rem;">
+            <i class="ph-fill ph-chart-bar" style="color:var(--primary);"></i> Appointment Breakdown
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;background:var(--primary-xlight);border-radius:10px;border:1px solid var(--border-dark);">
+            <span style="font-weight:600;font-size:0.9rem;"><i class="ph-fill ph-clock" style="color:var(--primary);"></i> Booked</span>
+            <span style="font-size:1.4rem;font-weight:800;color:var(--primary);">{{ booked }}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;background:#F0FDF4;border-radius:10px;border:1px solid #BBF7D0;">
+            <span style="font-weight:600;font-size:0.9rem;"><i class="ph-fill ph-check-circle" style="color:#15803D;"></i> Completed</span>
+            <span style="font-size:1.4rem;font-weight:800;color:#15803D;">{{ completed }}</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 1rem;background:#FEF2F2;border-radius:10px;border:1px solid #FECACA;">
+            <span style="font-weight:600;font-size:0.9rem;"><i class="ph-fill ph-x-circle" style="color:#B91C1C;"></i> Cancelled</span>
+            <span style="font-size:1.4rem;font-weight:800;color:#B91C1C;">{{ cancelled }}</span>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div style="grid-column:span 2;">
+        <div class="section-title" style="font-size:0.95rem;">
+            <i class="ph-fill ph-lightning" style="color:var(--primary);"></i> Quick Actions
+        </div>
+        <div class="grid grid-cols-2" style="gap:1rem;">
+            <a href="{{ url_for('admin.patients') }}" class="card text-center" style="text-decoration:none;padding:1.5rem;cursor:pointer;">
+                <div style="width:52px;height:52px;background:var(--primary-xlight);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="ph-fill ph-users" style="font-size:1.6rem;color:var(--primary);"></i>
+                </div>
+                <h4 style="margin-bottom:0.25rem;font-size:1rem;">Manage Patients</h4>
+                <p class="text-sm text-muted" style="margin:0;">View and manage all patient accounts</p>
+            </a>
+            <a href="{{ url_for('admin.doctors') }}" class="card text-center" style="text-decoration:none;padding:1.5rem;cursor:pointer;">
+                <div style="width:52px;height:52px;background:#E0F7FA;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="ph-fill ph-stethoscope" style="font-size:1.6rem;color:var(--accent);"></i>
+                </div>
+                <h4 style="margin-bottom:0.25rem;font-size:1rem;">Manage Doctors</h4>
+                <p class="text-sm text-muted" style="margin:0;">Edit profiles and remove doctors</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Appointments -->
+<div class="section-title"><i class="ph-fill ph-clock-clockwise" style="color:var(--primary);"></i> Recent Appointments</div>
+<div class="glass-card" style="padding:0;overflow:hidden;">
+    {% if recent_appts %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+            <thead>
+                <tr style="background:var(--primary-xlight);border-bottom:2px solid var(--border-dark);">
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Patient</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Doctor</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Date &amp; Time</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in recent_appts %}
+                <tr style="border-bottom:1px solid var(--border);transition:background 0.2s;" onmouseover="this.style.background='var(--primary-xlight)'" onmouseout="this.style.background=''">
+                    <td style="padding:0.9rem 1.25rem;font-size:0.9rem;">{{ a.patient_email }}</td>
+                    <td style="padding:0.9rem 1.25rem;font-weight:600;font-size:0.9rem;">Dr. {{ a.doctor_name }}</td>
+                    <td style="padding:0.9rem 1.25rem;font-size:0.9rem;">
+                        <span>{{ a.date }}</span>
+                        <span class="text-muted"> · {{ a.time }}</span>
+                    </td>
+                    <td style="padding:0.9rem 1.25rem;">
+                        {% if a.status == 'booked' %}
+                            <span class="badge badge-primary"><i class="ph-fill ph-clock"></i> Booked</span>
+                        {% elif a.status == 'cancelled' %}
+                            <span class="badge badge-danger"><i class="ph-fill ph-x-circle"></i> Cancelled</span>
+                        {% elif a.status == 'completed' %}
+                            <span class="badge badge-success"><i class="ph-fill ph-check-circle"></i> Completed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center" style="padding:3rem;">
+        <i class="ph-fill ph-calendar-blank" style="font-size:3rem;color:var(--text-muted);margin-bottom:1rem;display:block;"></i>
+        <p class="text-muted">No appointments found yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

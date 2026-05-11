@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% block title %}Patient Appointments{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between items-center" style="margin-bottom:2rem;">
+    <div>
+        <h2><i class="ph-fill ph-calendar" style="color:var(--primary);"></i> Appointments</h2>
+        <p>View your upcoming patient appointments.</p>
+    </div>
+    <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline btn-sm">
+        <i class="ph ph-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="glass-card" style="padding:0;overflow:hidden;">
+    {% if appointments %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+            <thead>
+                <tr style="background:var(--primary-xlight);border-bottom:2px solid var(--border-dark);">
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary);font-weight:700;">Date &amp; Time</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary);font-weight:700;">Patient</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary);font-weight:700;">Email</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--primary);font-weight:700;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr style="border-bottom:1px solid var(--border);transition:background 0.2s;" onmouseover="this.style.background='var(--primary-xlight)'" onmouseout="this.style.background=''">
+                    <td style="padding:1rem 1.25rem;">
+                        <div style="font-weight:600;font-size:0.95rem;">{{ appt.date }}</div>
+                        <div class="text-sm text-muted"><i class="ph ph-clock"></i> {{ appt.time }}</div>
+                    </td>
+                    <td style="padding:1rem 1.25rem;">
+                        <div class="flex items-center gap-2">
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;color:white;font-size:0.8rem;font-weight:700;">
+                                {{ appt.patient.email[0].upper() }}
+                            </div>
+                            <span style="font-weight:600;">{{ appt.patient.email.split('@')[0] | title }}</span>
+                        </div>
+                    </td>
+                    <td style="padding:1rem 1.25rem;color:var(--text-secondary);font-size:0.9rem;">{{ appt.patient.email }}</td>
+                    <td style="padding:1rem 1.25rem;">
+                        {% if appt.status == 'booked' %}
+                            <span class="badge badge-primary"><i class="ph-fill ph-clock"></i> Upcoming</span>
+                        {% elif appt.status == 'cancelled' %}
+                            <span class="badge badge-danger"><i class="ph-fill ph-x-circle"></i> Cancelled</span>
+                        {% elif appt.status == 'completed' %}
+                            <span class="badge badge-success"><i class="ph-fill ph-check-circle"></i> Completed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center" style="padding:4rem 2rem;">
+        <div style="width:80px;height:80px;background:var(--primary-xlight);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+            <i class="ph-fill ph-calendar-check" style="font-size:2.5rem;color:var(--primary);"></i>
+        </div>
+        <h3>No Appointments Yet</h3>
+        <p class="text-muted">You have no upcoming appointments scheduled.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

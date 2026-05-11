@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block title %}Manage Schedule{% endblock %}
+
+{% block content %}
+<div class="page-header flex justify-between items-center" style="margin-bottom:2rem;">
+    <div>
+        <h2><i class="ph-fill ph-clock" style="color:var(--primary);"></i> Manage Schedule</h2>
+        <p>Add available time slots for patients to book.</p>
+    </div>
+    <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-outline btn-sm">
+        <i class="ph ph-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="grid grid-cols-3" style="gap:1.5rem;">
+    <!-- Add Slot Form -->
+    <div>
+        <div class="glass-card">
+            <div class="section-title"><i class="ph-fill ph-plus-circle" style="color:var(--primary);"></i> Add New Slot</div>
+            <form method="POST" action="{{ url_for('doctor.manage_slots') }}">
+                <div class="form-group">
+                    <label class="form-label"><i class="ph ph-calendar"></i> Date</label>
+                    <input type="date" name="date" class="form-control" required min="{{ current_date }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="ph ph-clock"></i> Time</label>
+                    <input type="time" name="time" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">
+                    <i class="ph ph-plus"></i> Add Slot
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Slots Grid -->
+    <div style="grid-column:span 2;">
+        <div class="glass-card">
+            <div class="section-title"><i class="ph-fill ph-calendar-blank" style="color:var(--primary);"></i> Available Slots</div>
+            {% if slots %}
+            <div class="slot-grid">
+                {% for slot in slots %}
+                <div class="slot-item {% if slot.is_booked %}booked{% endif %}" style="position:relative;">
+                    <div style="font-weight:700;font-size:0.9rem;">{{ slot.time }}</div>
+                    <div class="text-xs text-muted">{{ slot.date }}</div>
+                    {% if slot.is_booked %}
+                        <div class="text-xs mt-1" style="color:var(--primary);font-weight:600;">Booked</div>
+                    {% else %}
+                        <div class="text-xs mt-1" style="color:var(--success);font-weight:600;">Available</div>
+                        <form method="POST" action="{{ url_for('doctor.delete_slot', slot_id=slot._id) }}" style="position:absolute;top:-6px;right:-6px;">
+                            <button type="submit" title="Delete Slot" style="width:22px;height:22px;border-radius:50%;background:var(--danger);color:white;border:2px solid white;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(239,68,68,0.4);">
+                                <i class="ph ph-x" style="font-size:9px;"></i>
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                <i class="ph-fill ph-info"></i> No slots scheduled yet. Add some using the form.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date().toISOString().split('T')[0];
+    var dateInput = document.querySelector('input[name="date"]');
+    if (dateInput) dateInput.setAttribute('min', today);
+});
+</script>
+{% endblock %}

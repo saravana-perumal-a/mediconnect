@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% block title %}Booking Confirmed{% endblock %}
+
+{% block content %}
+<div class="auth-container text-center" style="max-width:520px;">
+    <div class="glass-card">
+        <!-- Success Icon -->
+        <div style="width:90px;height:90px;background:linear-gradient(135deg,#10B981,#06B6D4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;box-shadow:0 12px 32px rgba(16,185,129,0.3);">
+            <i class="ph-fill ph-check-circle" style="font-size:3rem;color:white;"></i>
+        </div>
+
+        <h2 style="margin-bottom:0.5rem;">Appointment Confirmed!</h2>
+        <p class="text-muted mb-4">Your appointment with <strong>Dr. {{ doctor.name }}</strong> has been successfully booked.</p>
+
+        <!-- Appointment Details -->
+        <div style="background:var(--primary-xlight);border:1.5px solid var(--border-dark);border-radius:var(--radius);padding:1.5rem;margin-bottom:1.75rem;text-align:left;">
+            <div class="flex items-center gap-3 mb-3">
+                <div style="width:40px;height:40px;background:white;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);">
+                    <i class="ph-fill ph-calendar" style="color:var(--primary);font-size:1.2rem;"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-muted" style="font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Date &amp; Time</div>
+                    <div style="font-weight:700;font-size:1rem;">{{ appointment.date }} &nbsp;·&nbsp; {{ appointment.time }}</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div style="width:40px;height:40px;background:white;border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);">
+                    <i class="ph-fill ph-map-pin" style="color:var(--primary);font-size:1.2rem;"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-muted" style="font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Location</div>
+                    <div style="font-weight:700;font-size:1rem;">{{ doctor.hospital }}, {{ doctor.location }}</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-sm text-muted mb-4">
+            <i class="ph-fill ph-envelope" style="color:var(--primary);"></i>
+            A confirmation email has been sent to your registered email address.
+        </p>
+
+        <div class="flex gap-2 justify-center">
+            <a href="{{ url_for('patient.my_appointments') }}" class="btn btn-primary">
+                <i class="ph ph-calendar-check"></i> My Appointments
+            </a>
+            <a href="{{ url_for('patient.dashboard') }}" class="btn btn-outline">
+                <i class="ph ph-house"></i> Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

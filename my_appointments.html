@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% block title %}My Appointments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="ph-fill ph-calendar-check" style="color:var(--primary);"></i> My Appointments</h2>
+    <p>Manage your upcoming and past appointments.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:1rem;">
+    {% for appt in appointments %}
+    <div class="appt-row">
+        <div class="flex items-center gap-3" style="flex:1;">
+            <div class="profile-avatar" style="width:50px;height:50px;font-size:1.1rem;">
+                {{ appt.doctor.name[0] if appt.doctor.name else 'D' }}
+            </div>
+            <div>
+                <h4 style="margin-bottom:0.2rem;">Dr. {{ appt.doctor.name }}</h4>
+                <p class="text-sm text-muted mb-1">
+                    <i class="ph-fill ph-calendar"></i> {{ appt.date }} &nbsp;·&nbsp;
+                    <i class="ph-fill ph-clock"></i> {{ appt.time }}
+                </p>
+                <p class="text-sm text-muted mb-2">
+                    <i class="ph-fill ph-hospital"></i> {{ appt.doctor.hospital }}, {{ appt.doctor.location }}
+                </p>
+                {% if appt.status == 'booked' %}
+                    <span class="badge badge-primary"><i class="ph-fill ph-check-circle"></i> Booked</span>
+                {% elif appt.status == 'cancelled' %}
+                    <span class="badge badge-danger"><i class="ph-fill ph-x-circle"></i> Cancelled</span>
+                {% elif appt.status == 'completed' %}
+                    <span class="badge badge-success"><i class="ph-fill ph-check-circle"></i> Completed</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.6rem;min-width:140px;">
+            {% if appt.status == 'booked' %}
+                <a href="{{ url_for('patient.reschedule_appointment', appt_id=appt._id) }}" class="btn btn-outline btn-sm text-center">
+                    <i class="ph ph-arrows-clockwise"></i> Reschedule
+                </a>
+                <form method="POST" action="{{ url_for('patient.cancel_appointment', appt_id=appt._id) }}" onsubmit="return confirm('Cancel this appointment?');">
+                    <button type="submit" class="btn btn-danger btn-sm w-full">
+                        <i class="ph ph-x"></i> Cancel
+                    </button>
+                </form>
+            {% elif appt.status == 'completed' %}
+                <a href="{{ url_for('patient.doctor_profile', doctor_id=appt.doctor_id) }}" class="btn btn-outline btn-sm text-center">
+                    <i class="ph ph-star"></i> Leave Review
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="card text-center" style="padding:4rem 2rem;">
+        <div style="width:80px;height:80px;background:var(--primary-xlight);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+            <i class="ph-fill ph-calendar-x" style="font-size:2.5rem;color:var(--primary);"></i>
+        </div>
+        <h3>No Appointments Yet</h3>
+        <p class="text-muted mb-4">You haven't booked any appointments. Find a doctor to get started.</p>
+        <a href="{{ url_for('patient.search_doctors') }}" class="btn btn-primary">
+            <i class="ph ph-magnifying-glass"></i> Find a Doctor
+        </a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

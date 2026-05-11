@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="text-center mb-4">
+        <div style="width:64px;height:64px;background:var(--gradient-brand);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;box-shadow:0 8px 24px rgba(29,111,242,0.3);">
+            <i class="ph-fill ph-heartbeat" style="font-size:2rem;color:white;"></i>
+        </div>
+        <h2 style="margin-bottom:0.35rem;">Welcome Back</h2>
+        <p class="text-muted">Login to access your MediConnect dashboard.</p>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div style="display:flex;background:var(--surface-2);border:1.5px solid var(--border);border-radius:10px;padding:4px;margin-bottom:1.5rem;gap:4px;">
+        <button id="tab-user" onclick="switchTab('user');"
+            style="flex:1;padding:0.6rem;border:none;border-radius:7px;font-family:inherit;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.25s;background:var(--gradient-brand);color:white;box-shadow:0 2px 8px rgba(29,111,242,0.25);">
+            <i class="ph ph-user"></i> Patient / Doctor
+        </button>
+        <button id="tab-admin" onclick="switchTab('admin');"
+            style="flex:1;padding:0.6rem;border:none;border-radius:7px;font-family:inherit;font-weight:600;font-size:0.9rem;cursor:pointer;transition:all 0.25s;background:transparent;color:var(--text-secondary);">
+            <i class="ph ph-shield-check"></i> Admin
+        </button>
+    </div>
+
+    <!-- User Login Form -->
+    <div id="form-user" class="glass-card">
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-envelope" style="color:var(--primary);"></i> Email Address</label>
+                <input type="email" name="email" id="email" class="form-control" required placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-lock" style="color:var(--primary);"></i> Password</label>
+                <input type="password" name="password" id="password" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-2" style="padding:0.85rem;">
+                <i class="ph ph-sign-in"></i> Login
+            </button>
+        </form>
+        <hr class="divider">
+        <p class="text-center text-sm text-muted">
+            Don't have an account? <a href="{{ url_for('auth.register') }}" style="font-weight:600;">Register here</a>
+        </p>
+    </div>
+
+    <!-- Admin Login Form -->
+    <div id="form-admin" class="glass-card" style="display:none;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;padding:1rem;background:linear-gradient(135deg,#EBF2FF,#E0F7FA);border-radius:10px;border:1.5px solid var(--border-dark);">
+            <div style="width:44px;height:44px;background:var(--gradient-brand);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="ph-fill ph-shield-check" style="color:white;font-size:1.3rem;"></i>
+            </div>
+            <div>
+                <div style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">Administrator Access</div>
+                <div style="font-size:0.78rem;color:var(--text-secondary);">Restricted to authorized personnel only</div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('admin.login') }}">
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-envelope" style="color:var(--primary);"></i> Admin Email</label>
+                <input type="email" name="email" class="form-control" required placeholder="admin@mediconnect.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label"><i class="ph ph-lock" style="color:var(--primary);"></i> Admin Password</label>
+                <input type="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
+            <button type="submit" class="btn btn-primary w-full mt-2" style="padding:0.85rem;background:linear-gradient(135deg,#1D6FF2,#7C3AED);">
+                <i class="ph ph-shield-check"></i> Admin Login
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+function switchTab(tab) {
+    var isAdmin = tab === 'admin';
+    document.getElementById('form-user').style.display  = isAdmin ? 'none'  : 'block';
+    document.getElementById('form-admin').style.display = isAdmin ? 'block' : 'none';
+
+    var activeStyle   = 'background:var(--gradient-brand);color:white;box-shadow:0 2px 8px rgba(29,111,242,0.25);';
+    var inactiveStyle = 'background:transparent;color:var(--text-secondary);box-shadow:none;';
+
+    document.getElementById('tab-user').style.cssText  += isAdmin ? inactiveStyle : activeStyle;
+    document.getElementById('tab-admin').style.cssText += isAdmin ? activeStyle   : inactiveStyle;
+
+    if (isAdmin) {
+        document.getElementById('tab-user').style.background  = 'transparent';
+        document.getElementById('tab-user').style.color       = 'var(--text-secondary)';
+        document.getElementById('tab-user').style.boxShadow   = 'none';
+        document.getElementById('tab-admin').style.background = 'linear-gradient(135deg,#1D6FF2,#7C3AED)';
+        document.getElementById('tab-admin').style.color      = 'white';
+        document.getElementById('tab-admin').style.boxShadow  = '0 2px 8px rgba(29,111,242,0.25)';
+    } else {
+        document.getElementById('tab-user').style.background  = 'var(--gradient-brand)';
+        document.getElementById('tab-user').style.color       = 'white';
+        document.getElementById('tab-user').style.boxShadow   = '0 2px 8px rgba(29,111,242,0.25)';
+        document.getElementById('tab-admin').style.background = 'transparent';
+        document.getElementById('tab-admin').style.color      = 'var(--text-secondary)';
+        document.getElementById('tab-admin').style.boxShadow  = 'none';
+    }
+}
+</script>
+{% endblock %}

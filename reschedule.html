@@ -1,0 +1,58 @@
+{% extends 'layout.html' %}
+{% block title %}Reschedule Appointment{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('patient.my_appointments') }}" class="btn btn-outline btn-sm">
+        <i class="ph ph-arrow-left"></i> Back to Appointments
+    </a>
+</div>
+
+<div class="page-header">
+    <h2><i class="ph-fill ph-arrows-clockwise" style="color:var(--primary);"></i> Reschedule Appointment</h2>
+    <p>Select a new time slot for your appointment with <strong>Dr. {{ doctor.name }}</strong>.</p>
+</div>
+
+<div class="grid grid-cols-3" style="gap:1.5rem;">
+    <!-- Current Appointment -->
+    <div>
+        <div class="glass-card text-center">
+            <div style="width:64px;height:64px;background:#FFFBEB;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                <i class="ph-fill ph-calendar-x" style="font-size:2rem;color:var(--warning);"></i>
+            </div>
+            <div class="badge badge-warning mb-3">Current Booking</div>
+            <h4 style="margin-bottom:0.35rem;">{{ appointment.date }}</h4>
+            <p class="text-muted mb-2"><i class="ph ph-clock"></i> {{ appointment.time }}</p>
+            <p class="text-sm text-muted"><i class="ph-fill ph-hospital"></i> {{ doctor.hospital }}</p>
+        </div>
+    </div>
+
+    <!-- New Slots -->
+    <div style="grid-column:span 2;">
+        <div class="glass-card">
+            <div class="section-title"><i class="ph-fill ph-calendar-check" style="color:var(--primary);"></i> Choose a New Slot</div>
+            {% if grouped_slots %}
+                {% for date_label, slots in grouped_slots.items() %}
+                <div class="mb-4">
+                    <h5 class="mb-2" style="color: var(--primary);"><i class="ph ph-calendar"></i> {{ date_label }}</h5>
+                    <div class="slot-grid">
+                        {% for slot in slots %}
+                        <form method="POST" action="{{ url_for('patient.reschedule_appointment', appt_id=appointment._id) }}">
+                            <input type="hidden" name="new_slot_id" value="{{ slot._id }}">
+                            <button type="submit" class="slot-item" style="width:100%;font-family:inherit;cursor:pointer;" onclick="return confirm('Confirm reschedule to {{ slot.date }} at {{ slot.time }}?');">
+                                <div style="font-weight:700;">{{ slot.time }}</div>
+                            </button>
+                        </form>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-warning">
+                    <i class="ph-fill ph-warning"></i> No other available slots for this doctor at the moment.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

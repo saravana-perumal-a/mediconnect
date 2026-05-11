@@ -1,0 +1,121 @@
+{% extends 'layout.html' %}
+
+{% block title %}Dr. {{ doctor.name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('patient.search_doctors') }}" class="btn btn-outline mb-3">&larr; Back to Search</a>
+</div>
+
+<div class="grid grid-cols-3">
+    <!-- Doctor Info Column -->
+    <div style="grid-column: span 1;">
+        <div class="glass-card mb-4 text-center">
+            <div class="profile-avatar mx-auto mb-3" style="width: 100px; height: 100px; font-size: 2.5rem; margin: 0 auto 1rem;">
+                {{ doctor.name[0] if doctor.name else 'D' }}
+            </div>
+            <h3>{{ doctor.name }}</h3>
+            <span class="badge badge-primary mt-1 mb-3">{{ doctor.specialization }}</span>
+            
+            <p class="text-muted"><i class="ph-fill ph-hospital"></i> {{ doctor.hospital }}</p>
+            <p class="text-muted"><i class="ph-fill ph-map-pin"></i> {{ doctor.location }}</p>
+            
+            <div class="mt-3 flex justify-between items-center" style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: var(--radius);">
+                <div>
+                    <h4 style="margin-bottom: 0;">{{ doctor.rating|default('0.0') }} <i class="ph-fill ph-star" style="color: var(--warning);"></i></h4>
+                    <span class="text-sm text-muted">Rating</span>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 0;">{{ doctor.experience|default(0) }}</h4>
+                    <span class="text-sm text-muted">Years Exp.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card">
+            <h4 class="mb-3">Qualifications</h4>
+            <ul style="list-style-type: none;">
+                {% for qual in doctor.qualifications %}
+                    <li class="mb-2"><i class="ph-fill ph-check-circle text-primary"></i> {{ qual }}</li>
+                {% else %}
+                    <li class="text-muted">No qualifications listed.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Booking & Reviews Column -->
+    <div style="grid-column: span 2;">
+        <div class="glass-card mb-4">
+            <h3 class="mb-3">Book Appointment</h3>
+            <p class="text-muted mb-3">Select an available time slot below to book your appointment.</p>
+            
+            {% if grouped_slots %}
+                {% for date_label, slots in grouped_slots.items() %}
+                    <div class="mb-4">
+                        <h5 class="mb-2" style="color: var(--primary);"><i class="ph ph-calendar"></i> {{ date_label }}</h5>
+                        <div class="slot-grid">
+                            {% for slot in slots %}
+                                <form method="POST" action="{{ url_for('patient.book_appointment', slot_id=slot._id|string) }}">
+                                    <button type="submit" class="slot-item" style="width: 100%; border: none; background: var(--surface); color: var(--text-primary);">
+                                        <div class="font-weight-bold">{{ slot.time }}</div>
+                                    </button>
+                                </form>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-warning">
+                    No available slots at the moment. Please check back later.
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="glass-card">
+            <h3 class="mb-3">Patient Reviews</h3>
+            
+            <div class="mb-4">
+                <form method="POST" action="{{ url_for('patient.add_review', doctor_id=doctor._id|string) }}">
+                    <div class="form-group">
+                        <label class="form-label">Rate your experience</label>
+                        <select name="rating" class="form-control" style="width: auto;">
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="1">1 - Poor</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Your Review (Optional)</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Share your experience..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-outline">Submit Review</button>
+                </form>
+            </div>
+
+            <hr style="border-top: 1px solid var(--border); margin: 2rem 0;">
+
+            {% if doctor.reviews %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for review in doctor.reviews|reverse %}
+                        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: var(--radius);">
+                            <div class="flex justify-between items-center mb-2">
+                                <strong>{{ review.patient_name }}</strong>
+                                <span class="text-sm text-muted">{{ review.date }}</span>
+                            </div>
+                            <div class="mb-2 text-warning">
+                                {% for _ in range(review.rating) %}★{% endfor %}{% for _ in range(5 - review.rating) %}☆{% endfor %}
+                            </div>
+                            <p class="mb-0 text-muted">{{ review.comment }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

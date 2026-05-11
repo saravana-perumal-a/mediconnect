@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+{% block title %}Edit Doctor – Admin{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{{ url_for('admin.doctors') }}" class="btn btn-outline btn-sm">
+        <i class="ph ph-arrow-left"></i> Back to Doctors
+    </a>
+</div>
+
+<div class="page-header">
+    <h2><i class="ph-fill ph-pencil-simple" style="color:var(--primary);"></i> Edit Doctor Profile</h2>
+    <p>Update the profile details for <strong>Dr. {{ doctor.name }}</strong>.</p>
+</div>
+
+<div class="grid grid-cols-3" style="gap:1.5rem;">
+    <!-- Doctor Card Preview -->
+    <div>
+        <div class="glass-card text-center">
+            <div class="profile-avatar" style="width:72px;height:72px;font-size:1.8rem;margin:0 auto 1rem;">
+                {{ doctor.name[0] if doctor.name else 'D' }}
+            </div>
+            <h4 style="margin-bottom:0.25rem;">{{ doctor.name }}</h4>
+            <span class="badge badge-primary mb-3">{{ doctor.specialization }}</span>
+
+            <div style="display:flex;flex-direction:column;gap:0.6rem;text-align:left;margin-top:1rem;">
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="ph-fill ph-hospital" style="color:var(--primary);"></i>
+                    <span>{{ doctor.hospital }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="ph-fill ph-map-pin" style="color:var(--primary);"></i>
+                    <span>{{ doctor.location }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="ph-fill ph-briefcase" style="color:var(--primary);"></i>
+                    <span>{{ doctor.experience|default(0) }} years experience</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-muted">
+                    <i class="ph-fill ph-star" style="color:var(--warning);"></i>
+                    <span>{{ doctor.rating|default('0.0') }} rating · {{ doctor.reviews|length if doctor.reviews else 0 }} reviews</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Form -->
+    <div style="grid-column:span 2;">
+        <div class="glass-card">
+            <div class="section-title"><i class="ph-fill ph-pencil-simple" style="color:var(--primary);"></i> Update Information</div>
+            <form method="POST" action="{{ url_for('admin.edit_doctor', doctor_id=doctor._id) }}">
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ doctor.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Specialization</label>
+                        <input type="text" name="specialization" class="form-control" value="{{ doctor.specialization }}" required>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label class="form-label">Hospital / Clinic</label>
+                        <input type="text" name="hospital" class="form-control" value="{{ doctor.hospital }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ doctor.location }}" required>
+                    </div>
+                </div>
+                <div class="form-group" style="max-width:200px;">
+                    <label class="form-label">Years of Experience</label>
+                    <input type="number" name="experience" class="form-control" value="{{ doctor.experience|default(0) }}" min="0" required>
+                </div>
+
+                <hr class="divider">
+
+                <div class="flex gap-2 justify-end">
+                    <a href="{{ url_for('admin.doctors') }}" class="btn btn-outline">Cancel</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ph ph-floppy-disk"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

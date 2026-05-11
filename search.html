@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+{% block title %}Find a Doctor{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="ph-fill ph-magnifying-glass" style="color:var(--primary);"></i> Find a Doctor</h2>
+    <p>Search for doctors by specialization, location, or name.</p>
+</div>
+
+<!-- Search Bar -->
+<div class="glass-card mb-4" style="padding:1.75rem;">
+    <form method="GET" action="{{ url_for('patient.search_doctors') }}">
+        <div class="grid grid-cols-3" style="align-items:flex-end;gap:1rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label"><i class="ph ph-stethoscope"></i> Specialization</label>
+                <input type="text" name="specialization" class="form-control" placeholder="e.g. Cardiologist" value="{{ request.args.get('specialization', '') }}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label"><i class="ph ph-map-pin"></i> Location</label>
+                <input type="text" name="location" class="form-control" placeholder="e.g. New York" value="{{ request.args.get('location', '') }}">
+            </div>
+            <div class="form-group" style="margin-bottom:0;display:flex;gap:0.75rem;align-items:flex-end;">
+                <div style="flex:1;">
+                    <label class="form-label"><i class="ph ph-user"></i> Doctor Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Dr. Name" value="{{ request.args.get('name', '') }}">
+                </div>
+                <button type="submit" class="btn btn-primary" style="white-space:nowrap;padding:0.75rem 1.5rem;">
+                    <i class="ph ph-magnifying-glass"></i> Search
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Results -->
+<div class="grid grid-cols-3">
+    {% for doc in doctors %}
+    <div class="doctor-card">
+        <div class="flex items-center gap-2 mb-3">
+            <div class="profile-avatar" style="width:52px;height:52px;font-size:1.2rem;">
+                {{ doc.name[0] if doc.name else 'D' }}
+            </div>
+            <div>
+                <h4 style="margin-bottom:0.2rem;">{{ doc.name }}</h4>
+                <span class="badge badge-primary">{{ doc.specialization }}</span>
+            </div>
+        </div>
+
+        <p class="text-sm text-muted mb-1"><i class="ph-fill ph-hospital"></i> {{ doc.hospital }}</p>
+        <p class="text-sm text-muted mb-3"><i class="ph-fill ph-map-pin"></i> {{ doc.location }}</p>
+
+        <div class="flex justify-between items-center mb-3" style="margin-top:auto;padding-top:0.75rem;border-top:1px solid var(--border);">
+            <span class="text-sm"><i class="ph-fill ph-star" style="color:var(--warning);"></i>
+                {{ doc.rating|default('0.0') }}
+                <span class="text-muted">({{ doc.reviews|length if doc.reviews else 0 }} reviews)</span>
+            </span>
+            <span class="badge badge-primary" style="background:var(--primary-xlight);">{{ doc.experience|default(0) }} yrs exp</span>
+        </div>
+
+        <a href="{{ url_for('patient.doctor_profile', doctor_id=doc._id) }}" class="btn btn-primary w-full">
+            <i class="ph ph-calendar-plus"></i> View Profile & Book
+        </a>
+    </div>
+    {% else %}
+    <div style="grid-column:span 3;text-align:center;padding:4rem 2rem;">
+        <div style="width:80px;height:80px;background:var(--primary-xlight);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+            <i class="ph-fill ph-user-minus" style="font-size:2.5rem;color:var(--primary);"></i>
+        </div>
+        <h3>No doctors found</h3>
+        <p class="text-muted">Try adjusting your search criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

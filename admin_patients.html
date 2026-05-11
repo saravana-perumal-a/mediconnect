@@ -1,0 +1,87 @@
+{% extends 'layout.html' %}
+{% block title %}Manage Patients{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-4">
+    <div class="page-header" style="margin-bottom:0;">
+        <h2><i class="ph-fill ph-users" style="color:var(--primary);"></i> Manage Patients</h2>
+        <p>View and manage all registered patient accounts.</p>
+    </div>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline btn-sm">
+        <i class="ph ph-arrow-left"></i> Dashboard
+    </a>
+</div>
+
+<!-- Summary Bar -->
+<div class="stat-card mb-4" style="max-width:300px;">
+    <div class="stat-icon stat-icon-blue"><i class="ph-fill ph-users"></i></div>
+    <div>
+        <div class="stat-value">{{ patients|length }}</div>
+        <div class="stat-label">Total Patients</div>
+    </div>
+</div>
+
+<!-- Patients Table -->
+<div class="glass-card" style="padding:0;overflow:hidden;">
+    {% if patients %}
+    <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;">
+            <thead>
+                <tr style="background:var(--primary-xlight);border-bottom:2px solid var(--border-dark);">
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">#</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Patient</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Email</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Appointments</th>
+                    <th style="padding:1rem 1.25rem;text-align:left;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Joined</th>
+                    <th style="padding:1rem 1.25rem;text-align:center;font-size:0.78rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--primary);font-weight:700;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr style="border-bottom:1px solid var(--border);transition:background 0.2s;"
+                    onmouseover="this.style.background='var(--primary-xlight)'"
+                    onmouseout="this.style.background=''">
+                    <td style="padding:1rem 1.25rem;font-size:0.85rem;color:var(--text-muted);font-weight:600;">{{ loop.index }}</td>
+                    <td style="padding:1rem 1.25rem;">
+                        <div class="flex items-center gap-2">
+                            <div style="width:38px;height:38px;border-radius:50%;background:var(--gradient-brand);display:flex;align-items:center;justify-content:center;color:white;font-size:0.85rem;font-weight:700;flex-shrink:0;">
+                                {{ p.email[0].upper() }}
+                            </div>
+                            <span style="font-weight:600;font-size:0.92rem;">{{ p.email.split('@')[0] | title }}</span>
+                        </div>
+                    </td>
+                    <td style="padding:1rem 1.25rem;color:var(--text-secondary);font-size:0.9rem;">{{ p.email }}</td>
+                    <td style="padding:1rem 1.25rem;text-align:center;">
+                        <span class="badge badge-primary">{{ p.appt_count }} appt{{ 's' if p.appt_count != 1 else '' }}</span>
+                    </td>
+                    <td style="padding:1rem 1.25rem;font-size:0.85rem;color:var(--text-muted);">
+                        {% if p.created_at %}
+                            {{ p.created_at.strftime('%d %b %Y') }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td style="padding:1rem 1.25rem;text-align:center;">
+                        <form method="POST" action="{{ url_for('admin.delete_patient', patient_id=p._id) }}"
+                              onsubmit="return confirm('Delete patient {{ p.email }}? This will also remove all their appointments.');">
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="ph ph-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center" style="padding:4rem 2rem;">
+        <div style="width:80px;height:80px;background:var(--primary-xlight);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;">
+            <i class="ph-fill ph-users" style="font-size:2.5rem;color:var(--primary);"></i>
+        </div>
+        <h3>No Patients Registered</h3>
+        <p class="text-muted">No patient accounts have been created yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

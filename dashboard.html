@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<div class="hero-banner">
+    <div class="hero-badge"><span class="live-dot"></span> Active Patient Account</div>
+    <h2>Hello, Patient! 👋</h2>
+    <p>Welcome to your MediConnect dashboard. Your health, simplified.</p>
+</div>
+
+<!-- Action Cards -->
+<div class="section-title"><i class="ph-fill ph-lightning" style="color:var(--primary)"></i> Quick Actions</div>
+<div class="grid grid-cols-2">
+    <div class="action-card" onclick="location.href = `{{ url_for('patient.search_doctors') }}`;">
+        <div class="action-card-icon">
+            <i class="ph-fill ph-magnifying-glass"></i>
+        </div>
+        <h3>Find a Doctor</h3>
+        <p>Search by specialization, location, or name to find the best care available near you.</p>
+        <div class="mt-3">
+            <span class="btn btn-primary btn-sm">Search Now <i class="ph ph-arrow-right"></i></span>
+        </div>
+    </div>
+
+    <div class="action-card" onclick="location.href = `{{ url_for('patient.my_appointments') }}`;">
+        <div class="action-card-icon" style="background:#E0F7FA; color:var(--accent);">
+            <i class="ph-fill ph-calendar-check"></i>
+        </div>
+        <h3>My Appointments</h3>
+        <p>View, reschedule, or cancel your upcoming appointments all in one place.</p>
+        <div class="mt-3">
+            <span class="btn btn-outline btn-sm">View All <i class="ph ph-arrow-right"></i></span>
+        </div>
+    </div>
+</div>
+{% endblock %}
